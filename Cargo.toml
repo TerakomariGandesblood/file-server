@@ -71,7 +71,7 @@ tokio = { version = "1.49.0", default-features = false, features = [
 # https://github.com/zkat/supports-color
 supports-color = { version = "3.0.2", default-features = false }
 # https://github.com/clap-rs/clap
-clap = { version = "4.5.54", default-features = false, features = [
+clap = { version = "4.5.56", default-features = false, features = [
   "std",
   "color",
   "help",
@@ -96,7 +96,7 @@ serde = { version = "1.0.228", default-features = false, features = [
 # https://github.com/kardeiz/sanitize-filename
 sanitize-filename = { version = "0.6.0", default-features = false }
 # https://github.com/uuid-rs/uuid
-uuid = { version = "1.19.0", default-features = false, features = [
+uuid = { version = "1.20.0", default-features = false, features = [
   "std",
   "v4",
   "fast-rng",
