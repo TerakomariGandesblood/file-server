@@ -1,11 +1,14 @@
 # https://release-plz.ieni.dev/docs/config
 
 [workspace]
-git_release_enable = false
+
+[[package]]
+name = "file-server"
+publish = false
 
 [changelog]
 commit_preprocessors = [
-  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/TerakomariGandesblood/server/issues/${2}))" },
+  { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/TerakomariGandesblood/file-server/issues/${2}))" },
 ]
 
 commit_parsers = [

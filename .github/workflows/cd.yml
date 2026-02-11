@@ -1,14 +1,15 @@
 name: CD
 
+permissions: {}
+
 on:
   release:
     types: [published]
 
-permissions:
-  contents: write
-
 jobs:
   cd:
+    permissions:
+      contents: write
     uses: TerakomariGandesblood/github-workflows/.github/workflows/rust-cd.yml@main
     with:
       bin: server

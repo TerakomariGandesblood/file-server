@@ -10,12 +10,20 @@ use supports_color::Stream;
 #[command(version, about, long_about = None, styles = get_styles())]
 pub struct Args {
     /// 监听地址
-    #[arg(short, long, default_value_t = Ipv4Addr::new(127,0,0,1))]
+    #[arg(long, default_value_t = Ipv4Addr::new(127,0,0,1))]
     pub host: Ipv4Addr,
 
     /// 监听端口
-    #[arg(short, long, default_value_t = 8001)]
+    #[arg(long, default_value_t = 8001)]
     pub port: u16,
+
+    /// 上传文件使用的用户名
+    #[arg(long, default_value_t = String::from("terakomari"))]
+    pub upload_username: String,
+
+    /// 上传文件使用的密码
+    #[arg(long, default_value_t = String::from("orange"))]
+    pub upload_password: String,
 
     #[command(flatten)]
     pub verbose: Verbosity,

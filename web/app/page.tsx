@@ -12,25 +12,73 @@ export default function Home() {
   const [files, setFiles] = useState<FileData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+
+  const fetchFiles = async () => {
+    try {
+      const res = await fetch("/api/list");
+      if (!res.ok) {
+        throw new Error("Failed to fetch files.");
+      }
+      const data: FileData[] = await res.json();
+      setFiles(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
+    }
+  };
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError(null);
+    setUploadSuccess(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("files", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("上传失败");
+      }
+
+      setUploadSuccess(`文件 "${file.name}" 上传成功！`);
+
+      // 3 秒后清除成功提示
+      setTimeout(() => {
+        setUploadSuccess(null);
+      }, 3000);
+
+      // 重新获取文件列表
+      await fetchFiles();
+
+      // 清空文件选择
+      event.target.value = "";
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("上传时发生未知错误");
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const res = await fetch("/api/list");
-        if (!res.ok) {
-          throw new Error("Failed to fetch files.");
-        }
-        const data: FileData[] = await res.json();
-        setFiles(data);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred.");
-        }
-      }
-    };
-
     fetchFiles();
   }, []);
 
@@ -107,6 +155,50 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* Success Message */}
+        {uploadSuccess && (
+          <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg shadow-sm">
+            <div className="flex items-center">
+              <span className="text-2xl mr-3">✅</span>
+              <p className="text-green-800 font-medium">{uploadSuccess}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Upload Button */}
+        <div className="mb-8">
+          <div className="max-w-2xl mx-auto">
+            <label
+              htmlFor="file-upload"
+              className={`flex items-center justify-center w-full px-6 py-4 bg-linear-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer ${
+                uploading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              <svg
+                className="w-6 h-6 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+              {uploading ? "上传中..." : "上传文件"}
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+          </div>
+        </div>
 
         {/* Search Bar */}
         <div className="mb-8">

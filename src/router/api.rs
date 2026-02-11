@@ -9,7 +9,6 @@ use jiff::tz::TimeZone;
 use jiff::{Timestamp, Zoned};
 use serde::Serialize;
 use tokio::fs;
-use uuid::Uuid;
 use walkdir::WalkDir;
 
 use crate::ServerError;
@@ -23,8 +22,10 @@ pub async fn upload(
     TypedMultipart(FileUpload { files }): TypedMultipart<FileUpload>,
 ) -> Result<Response, ServerError> {
     if files.is_empty() {
-        tracing::error!("upload file is empty");
-        return Ok((StatusCode::BAD_REQUEST, "upload file is empty").into_response());
+        return Err(ServerError(
+            StatusCode::BAD_REQUEST,
+            anyhow::anyhow!("upload file is empty"),
+        ));
     }
 
     let base_path = PathBuf::from(super::FILES_DIR_PATH);
@@ -32,19 +33,24 @@ pub async fn upload(
 
     for file in files {
         let Some(file_name) = file.metadata.file_name else {
-            tracing::error!("upload file name is empty");
-            return Ok((StatusCode::BAD_REQUEST, "upload file name is empty").into_response());
+            return Err(ServerError(
+                StatusCode::BAD_REQUEST,
+                anyhow::anyhow!("upload file name is empty"),
+            ));
         };
 
-        let file_name = sanitize_filename::sanitize(file_name);
-        let mut file_path = base_path.join(&file_name);
+        let file_name = PathBuf::from(sanitize_filename::sanitize(file_name));
+        let file_path = base_path.join(&file_name);
 
         if fs::try_exists(&file_path).await? {
-            file_path = base_path.join(format!("{file_name}.{}", Uuid::new_v4()));
+            tracing::warn!(
+                "the file already exists, the old file will be deleted.: {}",
+                file_path.display()
+            );
+            fs::remove_file(&file_path).await?;
         }
 
         fs::write(&file_path, file.contents).await?;
-        tracing::trace!("save file: {}", file_path.display());
     }
 
     Ok(StatusCode::CREATED.into_response())

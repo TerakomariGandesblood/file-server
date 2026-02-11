@@ -15,13 +15,11 @@ use tower_http::services::ServeDir;
 use tower_http::trace::TraceLayer;
 use tower_http::validate_request::ValidateRequestHeaderLayer;
 
-const USERNAME: &str = "terakomari";
-
-const PASSWORD: &str = "orange";
+use crate::Args;
 
 const FILES_DIR_PATH: &str = "static";
 
-pub fn router() -> Router {
+pub fn router(args: &Args) -> Router {
     let memory_router = memory_serve::load!()
         .fallback(Some("/404.html"))
         .into_router();
@@ -31,7 +29,7 @@ pub fn router() -> Router {
             "/api/upload",
             routing::post(api::upload).layer(
                 #[allow(deprecated)]
-                ValidateRequestHeaderLayer::basic(USERNAME, PASSWORD),
+                ValidateRequestHeaderLayer::basic(&args.upload_username, &args.upload_password),
             ),
         )
         .route("/api/list", routing::get(api::list))
