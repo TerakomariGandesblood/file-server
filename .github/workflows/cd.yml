@@ -13,4 +13,4 @@ jobs:
       contents: write
     uses: TerakomariGandesblood/github-workflows/.github/workflows/rust-cd.yml@main
     with:
-      bin: server
+      bin: file-server
