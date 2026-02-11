@@ -1,8 +1,11 @@
+use std::io;
 use std::net::Ipv4Addr;
 
-use clap::Parser;
+use anyhow::Result;
 use clap::builder::Styles;
 use clap::builder::styling::{AnsiColor, Style};
+use clap::{CommandFactory, Parser, ValueEnum};
+use clap_complete::Generator;
 use clap_verbosity_flag::Verbosity;
 use supports_color::Stream;
 
@@ -24,6 +27,10 @@ pub struct Args {
     /// 上传文件使用的密码
     #[arg(long, default_value_t = String::from("orange"))]
     pub upload_password: String,
+
+    /// 生成 shell 补全到标准输出
+    #[arg(long, value_enum)]
+    pub completion: Option<Shell>,
 
     #[command(flatten)]
     pub verbose: Verbosity,
@@ -51,4 +58,40 @@ fn get_styles() -> Styles {
     } else {
         Styles::plain()
     }
+}
+
+#[must_use]
+#[derive(Clone, ValueEnum)]
+pub enum Shell {
+    Bash,
+    Elvish,
+    Fish,
+    PowerShell,
+    Zsh,
+    Nushell,
+}
+
+impl Shell {
+    fn to_clap_type(&self) -> Box<dyn Generator> {
+        match self {
+            Self::Bash => Box::new(clap_complete::Shell::Bash),
+            Self::Elvish => Box::new(clap_complete::Shell::Elvish),
+            Self::Fish => Box::new(clap_complete::Shell::Fish),
+            Self::PowerShell => Box::new(clap_complete::Shell::PowerShell),
+            Self::Zsh => Box::new(clap_complete::Shell::Zsh),
+            Self::Nushell => Box::new(clap_complete_nushell::Nushell),
+        }
+    }
+}
+
+pub fn generate_completion(shell: Shell) -> Result<()> {
+    let mut cmd = Args::command();
+    let bin_name = cmd.get_name().to_string();
+
+    cmd.set_bin_name(bin_name);
+    cmd.build();
+
+    shell.to_clap_type().generate(&cmd, &mut io::stdout());
+
+    Ok(())
 }

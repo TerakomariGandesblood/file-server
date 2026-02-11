@@ -86,6 +86,10 @@ clap = { version = "4.5.57", default-features = false, features = [
 ] }
 # https://github.com/clap-rs/clap-verbosity-flag
 clap-verbosity-flag = { version = "3.0.4", default-features = false }
+# https://github.com/clap-rs/clap
+clap_complete = { version = "4.5.65", default-features = false }
+# https://github.com/clap-rs/clap
+clap_complete_nushell = { version = "4.5.10", default-features = false }
 # https://github.com/purpleprotocol/mimalloc_rust
 mimalloc = { version = "0.1.48", default-features = false }
 # https://github.com/serde-rs/serde

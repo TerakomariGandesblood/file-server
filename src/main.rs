@@ -14,6 +14,11 @@ async fn main() -> Result<()> {
     let args = Args::parse();
     let _guard = file_server::init_log(&args.verbose, "log", env!("CARGO_CRATE_NAME"));
 
+    if let Some(shell) = args.completion {
+        file_server::generate_completion(shell)?;
+        return Ok(());
+    }
+
     let router = file_server::router(&args);
     let listener = TcpListener::bind(SocketAddr::new(IpAddr::V4(args.host), args.port)).await?;
     tracing::info!("listening on {}", listener.local_addr()?);
