@@ -1,6 +1,5 @@
 mod api;
 
-use std::borrow::Cow;
 use std::time::Duration;
 
 use axum::error_handling::HandleErrorLayer;
@@ -15,7 +14,7 @@ use tower_http::services::ServeDir;
 use tower_http::trace::TraceLayer;
 use tower_http::validate_request::ValidateRequestHeaderLayer;
 
-use crate::Args;
+use crate::{Args, ServerError};
 
 const FILES_DIR_PATH: &str = "static";
 
@@ -50,18 +49,21 @@ pub fn router(args: &Args) -> Router {
 
 async fn handle_error(error: BoxError) -> impl IntoResponse {
     if error.is::<tower::timeout::error::Elapsed>() {
-        return (StatusCode::REQUEST_TIMEOUT, Cow::from("request timed out"));
-    }
-
-    if error.is::<tower::load_shed::error::Overloaded>() {
-        return (
-            StatusCode::SERVICE_UNAVAILABLE,
-            Cow::from("service is overloaded, try again later"),
+        return ServerError(
+            StatusCode::REQUEST_TIMEOUT,
+            anyhow::anyhow!("request timed out"),
         );
     }
 
-    (
+    if error.is::<tower::load_shed::error::Overloaded>() {
+        return ServerError(
+            StatusCode::SERVICE_UNAVAILABLE,
+            anyhow::anyhow!("service is overloaded, try again later"),
+        );
+    }
+
+    ServerError(
         StatusCode::INTERNAL_SERVER_ERROR,
-        Cow::from(format!("Unhandled internal error: {error}")),
+        anyhow::anyhow!("Unhandled internal error: {error}"),
     )
 }
