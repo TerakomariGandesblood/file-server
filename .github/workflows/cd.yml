@@ -16,7 +16,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          persist-credentials: false
       - name: Create release
         uses: taiki-e/create-gh-release-action@v1
         with:
