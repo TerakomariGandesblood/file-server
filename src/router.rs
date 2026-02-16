@@ -37,8 +37,8 @@ pub fn router(args: &Args) -> Router {
         .layer(
             ServiceBuilder::new()
                 .layer(HandleErrorLayer::new(handle_error))
-                .layer(DefaultBodyLimit::max(128 * 1024 * 1024))
-                .timeout(Duration::from_secs(10))
+                .layer(DefaultBodyLimit::max(1024 * 1024 * 1024))
+                .timeout(Duration::from_secs(10 * 60))
                 .load_shed()
                 .concurrency_limit(1024)
                 .layer(RequestDecompressionLayer::new())
