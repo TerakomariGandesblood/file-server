@@ -2,6 +2,8 @@ mod args;
 mod log;
 mod router;
 
+use std::env;
+
 use anyhow::Result;
 pub use args::*;
 use axum::Json;
@@ -38,9 +40,17 @@ impl IntoResponse for ServerError {
 }
 
 pub async fn rustls_config() -> Result<RustlsConfig> {
-    Ok(RustlsConfig::from_pem(
-        include_bytes!("../certs/localhost+4.pem").to_vec(),
-        include_bytes!("../certs/localhost+4-key.pem").to_vec(),
+    Ok(RustlsConfig::from_pem_file(
+        env::current_exe()?
+            .parent()
+            .unwrap()
+            .join("certs")
+            .join("localhost.pem"),
+        env::current_exe()?
+            .parent()
+            .unwrap()
+            .join("certs")
+            .join("localhost-key.pem"),
     )
     .await?)
 }
