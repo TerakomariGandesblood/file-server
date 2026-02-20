@@ -1,10 +1,11 @@
-use std::net::{IpAddr, SocketAddr};
+use std::net::SocketAddr;
+use std::time::Duration;
 
 use anyhow::Result;
+use axum_server::Handle;
 use clap::Parser;
 use file_server::Args;
 use mimalloc::MiMalloc;
-use tokio::net::TcpListener;
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
@@ -19,12 +20,22 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    let router = file_server::router(&args);
-    let listener = TcpListener::bind(SocketAddr::new(IpAddr::V4(args.host), args.port)).await?;
-    tracing::info!("listening on {}", listener.local_addr()?);
+    let handle = Handle::new();
+    let handle_clone = handle.clone();
+    tokio::spawn(async move {
+        file_server::shutdown_signal().await;
+        handle_clone.graceful_shutdown(Some(Duration::from_secs(10)));
+    });
 
-    axum::serve(listener, router)
-        .with_graceful_shutdown(file_server::shutdown_signal())
+    let addr = SocketAddr::from((args.host, args.port));
+    tracing::info!("listening on {addr}");
+
+    let rustls_config = file_server::rustls_config().await?;
+    let router = file_server::router(&args);
+
+    axum_server::bind_rustls(addr, rustls_config)
+        .handle(handle)
+        .serve(router.into_make_service())
         .await?;
 
     Ok(())

@@ -45,6 +45,10 @@ axum = { version = "0.8.8", default-features = false, features = [
   "tower-log",
   "tracing",
 ] }
+# https://github.com/programatik29/axum-server
+axum-server = { version = "0.8.0", default-features = false, features = [
+  "tls-rustls",
+] }
 # https://github.com/murar8/axum_typed_multipart
 axum_typed_multipart = { version = "0.16.5", default-features = false }
 # https://github.com/tower-rs/tower

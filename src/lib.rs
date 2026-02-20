@@ -2,10 +2,12 @@ mod args;
 mod log;
 mod router;
 
+use anyhow::Result;
 pub use args::*;
 use axum::Json;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
+use axum_server::tls_rustls::RustlsConfig;
 pub use log::*;
 pub use router::*;
 use serde::Serialize;
@@ -33,6 +35,14 @@ impl IntoResponse for ServerError {
                 .into_response()
         }
     }
+}
+
+pub async fn rustls_config() -> Result<RustlsConfig> {
+    Ok(RustlsConfig::from_pem(
+        include_bytes!("../certs/localhost+4.pem").to_vec(),
+        include_bytes!("../certs/localhost+4-key.pem").to_vec(),
+    )
+    .await?)
 }
 
 impl<E> From<E> for ServerError
