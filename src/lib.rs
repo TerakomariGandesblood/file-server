@@ -24,8 +24,9 @@ pub struct ServerError(StatusCode, anyhow::Error);
 
 impl IntoResponse for ServerError {
     fn into_response(self) -> Response {
+        tracing::error!("Something went wrong: {}({})", self.1, self.0);
+
         if self.0 == StatusCode::INTERNAL_SERVER_ERROR {
-            tracing::error!("Something went wrong: {}", self.1);
             self.0.into_response()
         } else {
             (
