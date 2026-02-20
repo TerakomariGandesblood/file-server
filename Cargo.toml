@@ -1,6 +1,6 @@
 [package]
 name = "file-server"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 rust-version = "1.88"
 license = "MIT OR Apache-2.0"
@@ -14,7 +14,7 @@ publish = false
 
 [dependencies]
 # https://github.com/dtolnay/anyhow
-anyhow = { version = "1.0.101", default-features = false, features = ["std"] }
+anyhow = { version = "1.0.102", default-features = false, features = ["std"] }
 # https://github.com/tokio-rs/tracing
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
 # https://github.com/tokio-rs/tracing
@@ -71,7 +71,7 @@ tokio = { version = "1.49.0", default-features = false, features = [
 # https://github.com/zkat/supports-color
 supports-color = { version = "3.0.2", default-features = false }
 # https://github.com/clap-rs/clap
-clap = { version = "4.5.57", default-features = false, features = [
+clap = { version = "4.5.60", default-features = false, features = [
   "std",
   "color",
   "help",
@@ -87,7 +87,7 @@ clap = { version = "4.5.57", default-features = false, features = [
 # https://github.com/clap-rs/clap-verbosity-flag
 clap-verbosity-flag = { version = "3.0.4", default-features = false }
 # https://github.com/clap-rs/clap
-clap_complete = { version = "4.5.65", default-features = false }
+clap_complete = { version = "4.5.66", default-features = false }
 # https://github.com/clap-rs/clap
 clap_complete_nushell = { version = "4.5.10", default-features = false }
 # https://github.com/purpleprotocol/mimalloc_rust
@@ -102,7 +102,7 @@ sanitize-filename = { version = "0.6.0", default-features = false }
 # https://github.com/BurntSushi/walkdir
 walkdir = { version = "2.5.0", default-features = false }
 # https://github.com/BurntSushi/jiff
-jiff = { version = "0.2.19", default-features = false, features = [
+jiff = { version = "0.2.20", default-features = false, features = [
   "std",
   "tz-system",
   "tz-fat",
@@ -113,15 +113,15 @@ jiff = { version = "0.2.19", default-features = false, features = [
   "serde",
 ] }
 # https://github.com/tweedegolf/memory-serve
-memory-serve = { version = "2.0.0-beta.0", default-features = false }
+memory-serve = { version = "2.0.0", default-features = false }
 
 [build-dependencies]
 # https://github.com/rust-shell-script/rust_cmd_lib
 cmd_lib = { version = "2.0.0", default-features = false }
 # https://github.com/tweedegolf/memory-serve
-memory-serve = { version = "2.0.0-beta.0", default-features = false }
+memory-serve = { version = "2.0.0", default-features = false }
 # https://github.com/dtolnay/anyhow
-anyhow = { version = "1.0.101", default-features = false, features = ["std"] }
+anyhow = { version = "1.0.102", default-features = false, features = ["std"] }
 
 [profile.release]
 strip = true
