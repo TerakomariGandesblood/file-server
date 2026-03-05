@@ -66,7 +66,7 @@ tower-http = { version = "0.6.8", default-features = false, features = [
   "fs",
 ] }
 # https://github.com/tokio-rs/tokio
-tokio = { version = "1.49.0", default-features = false, features = [
+tokio = { version = "1.50.0", default-features = false, features = [
   "fs",
   "macros",
   "signal",
@@ -106,7 +106,7 @@ sanitize-filename = { version = "0.6.0", default-features = false }
 # https://github.com/BurntSushi/walkdir
 walkdir = { version = "2.5.0", default-features = false }
 # https://github.com/BurntSushi/jiff
-jiff = { version = "0.2.21", default-features = false, features = [
+jiff = { version = "0.2.23", default-features = false, features = [
   "std",
   "tz-system",
   "tz-fat",
